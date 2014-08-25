@@ -30,6 +30,8 @@ inOrder :: MessageTree -> [LogMessage]
 inOrder (Leaf) = []
 inOrder (Node left msg right)  = (inOrder left) ++ [msg] ++ (inOrder right)
 
+-- Not sure how he intended us to test this code without writing something like the above
+-- The use of fmap is a bit ahead of ourselves..?
 doit :: Int -> IO [LogMessage]
 doit count = inOrder <$> build <$> (testParse parse count "error.log")
 
