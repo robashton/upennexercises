@@ -30,10 +30,20 @@ inOrder :: MessageTree -> [LogMessage]
 inOrder (Leaf) = []
 inOrder (Node left msg right)  = (inOrder left) ++ [msg] ++ (inOrder right)
 
--- Not sure how he intended us to test this code without writing something like the above
+isSevereError :: LogMessage -> Bool
+isSevereError (LogMessage (Error severity) _ _)
+  | severity >= 50 = True
+  | otherwise = False
+isSevereError _ = False
+
+whatWentWrong :: [LogMessage] -> [String]
+whatWentWrong xs = map (\(LogMessage (Error _) _ msg) -> msg) $ inOrder $ build $ filter isSevereError xs
+
+-- Not sure how he intended us to test intermediate code without writing something like the below
 -- The use of fmap is a bit ahead of ourselves..?
 doit :: Int -> IO [LogMessage]
 doit count = inOrder <$> build <$> (testParse parse count "error.log")
+
 
 
 
