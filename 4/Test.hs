@@ -54,5 +54,16 @@ xor = even . length . filter not
 map' :: (a -> b) -> [a] -> [b]
 map' f = foldr ((:) . f) []
 
+-- And this one
+-- I thought about using a fold with a pair to only iterate through once
+-- but overkill
+sieveSundaram :: Integer -> [Integer]
+sieveSundaram n = map ((+1) . (*2)) $ filter (flip notElem $ sieveRange n) [1..n]
+
+sieveRange :: Integer -> [Integer]
+sieveRange n = filter (<n) . map (\(i,j) -> i + j + 2 * (i * j)) $ crossRange n
+
+crossRange :: Integer -> [(Integer, Integer)]
+crossRange n = [(i,j) | i <- [1..n], j <- [1..n]]
 
 
