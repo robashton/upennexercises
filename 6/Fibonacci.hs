@@ -19,35 +19,35 @@ fibs2 = map fst $ iterate (\(x,y) -> (y, (x+y))) (0,1)
 
 
 -- TODO: Is it possible to do an infix data constructor?
-data Stream a = Cons a (Stream a)
+data Stream a = a :> (Stream a)
 
 -- um, what does this actually mean?
 instance Show a => Show (Stream a) where
   show x = show $ take 20 $ streamToList x
 
 streamToList :: Stream a -> [a]
-streamToList (Cons value next) = value : streamToList(next)
+streamToList (value :> next) = value : streamToList(next)
 
 streamRepeat :: a -> Stream a
-streamRepeat x = Cons x (streamRepeat x)
+streamRepeat x = x :> (streamRepeat x)
 
 streamMap :: (a -> b) -> Stream a -> Stream b
-streamMap f (Cons value next) = Cons (f value) (streamMap f next)
+streamMap f (value :> next) = (f value) :> (streamMap f next)
 
 streamFromSeed :: (a -> a) -> a -> Stream a
-streamFromSeed f v = Cons v (streamFromSeed f (f v))
+streamFromSeed f v = v :> (streamFromSeed f (f v))
 
 nats :: Stream Integer
 nats = streamFromSeed (+1) 0
 
 interleaveStreams :: Stream a -> Stream a -> Stream a
-interleaveStreams (Cons value next) ignored = Cons value (interleaveStreams ignored next)
+interleaveStreams (value :> next) ignored =  value :> (interleaveStreams ignored next)
 
-ruler :: Stream Integer
-ruler = interleaveStreams (streamRepeat 0) $ streamMap rulerValue $ streamFromSeed (+2) 2
-
-rulerValue :: Integer -> Integer
-rulerValue x = x
+--ruler :: Stream Integer
+--ruler = interleaveStreams (streamRepeat 0) $ streamMap rulerValue $ streamFromSeed (+2) 2
+--
+--rulerValue :: Integer -> Integer
+--rulerValue x = x
 
 ---- dumb way first
 --ruler :: Stream Integer
