@@ -19,7 +19,6 @@ generate xs = zip3 xs (drop 1 xs) (drop 2 xs)
 localMaxima :: [Integer] -> [Integer]
 localMaxima = concat . map maxima . generate
 
-
 --- FUUUUUUUUUUUUUUUUUUUUUUU
 
 printline :: Int -> [Int] -> String

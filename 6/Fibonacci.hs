@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleInstances #-}
+
 module Fibonacci where
 
 fib :: Integer -> Integer
@@ -17,8 +19,6 @@ fibs1 = map fib [0..]
 fibs2 :: [Integer]
 fibs2 = map fst $ iterate (\(x,y) -> (y, (x+y))) (0,1)
 
-
--- TODO: Is it possible to do an infix data constructor?
 data Stream a = a :> (Stream a)
 
 -- um, what does this actually mean?
@@ -43,15 +43,34 @@ nats = streamFromSeed (+1) 0
 interleaveStreams :: Stream a -> Stream a -> Stream a
 interleaveStreams (value :> next) ignored =  value :> (interleaveStreams ignored next)
 
---ruler :: Stream Integer
---ruler = interleaveStreams (streamRepeat 0) $ streamMap rulerValue $ streamFromSeed (+2) 2
---
---rulerValue :: Integer -> Integer
---rulerValue x = x
+ruler :: Stream Integer
+ruler = interleaveStreams (streamRepeat 0) $ streamMap rulerValue $ streamFromSeed (+2) 2
 
----- dumb way first
---ruler :: Stream Integer
---ruler = streamMap rulerValue nats
+-- doing it the dumb way cos I really can't work
+-- out what the pattern is - I should stop doing haskell
+-- when drunk on aeroplanes!!!
+
+rulerValue :: Integer -> Integer
+rulerValue x = rulerValueInner x where
+  rulerValueInner y
+    | y == 1 = 1
+    | (x `mod` (2^y)) == 0 = y
+    | otherwise = rulerValueInner $ y-1
+
+-- -----------
+-- Bonus points
+-- -----------
+-- Need to work out what he means by this and generating functions, next exercise
+--x :: Stream Integer
+
+instance Num (Stream Integer) where
+  fromInteger x = streamRepeat x
+  (+) x y = interleaveStreams x y
+  (-) x y = interleaveStreams x y
+  (*) x y = interleaveStreams x y
+
+
+
 
 
 --1 2 3 4  5  6
@@ -60,6 +79,4 @@ interleaveStreams (value :> next) ignored =  value :> (interleaveStreams ignored
 --
 --1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26
 --0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 4,0  1  0  4  0  1  0  8
-
-
 
